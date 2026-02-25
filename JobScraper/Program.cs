@@ -1,4 +1,4 @@
-using JobScraper.Data;
+using JobScraper.Repositories;
 using JobScraper.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
