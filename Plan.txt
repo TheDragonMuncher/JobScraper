@@ -1,0 +1,12 @@
+Write a small project that parses job posting sites, analyzes them using AI, and prepares a report for yourself on the technologies, skills, responsibilities mentioned, and their frequency. Find the intersection between what they want, what you already know, what you could learn quickly, and what you like to do in general. That’s most likely where you should focus your effort.
+
+Split a task into stages:
+1. Script to parse a single site - output: database table with posts (Some sites has complex internal API and data protection. I wouldn't recommend to start from them. Pick something simple)
+2. Script to analyze the posts - output: metadata for each item
+3. Script to aggregate information, find insights - output: report
+4. Rework script from stage 1 into interface + implementation, create implementations for other sites - output: you get insights from many sites\job postings
+5. convert your separate scripts into a background job that will run and analyze new posts.
+<—- here you should decide what you want
+6. Add one more job that will analyze all incoming postings, filtration by your criteria and notify you in minutes after it was published so you could apply asap and be among the firsts
+
+I recommend using AI for planning. While you’re learning, ask questions—but implement it yourself so the basic coding is imprinted in your memory.
