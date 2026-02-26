@@ -12,7 +12,11 @@ class ScraperService
     readonly string _targetUrl;
 
     // specific paths for indeed scraping
-    const string JobCardXPath = "";
+    const string JobCardXPath = "//div[contains(@class, 'cardOutline')]";
+    const string TitleXPath = ".//h2[contains(@class, 'jobTitle')]";
+    const string Company = ".//span[contains(@data-testid, 'company-name')]";
+    const string Location = ".//div[contains(@data-testid, 'text-location')]";
+    const string Salary = ".//li[containt(@class, 'salary-snippet-container')]/div/div";
 
     public ScraperService(HttpClient http, ILogger<ScraperService> logger, string url)
     {
