@@ -12,11 +12,17 @@ public class JobRepository
         _context = dbContext;
     }
 
-    public async Task<JobPosting> CreateJobPostingAsync(JobPosting posting)
+    public async Task<JobPosting> AddJobPostingAsync(JobPosting posting)
     {
         _context.JobPostings.Add(posting);
         await _context.SaveChangesAsync();
         return posting;
+    }
+    public async Task<List<JobPosting>> AddJobPostingAsync(List<JobPosting> postings)
+    {
+        _context.JobPostings.AddRange(postings);
+        await _context.SaveChangesAsync();
+        return postings;
     }
 
     public async Task<List<JobPosting>> GetJobPostingsAsync()

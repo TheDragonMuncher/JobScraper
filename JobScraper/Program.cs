@@ -1,37 +1,59 @@
+using JobScraper.Data;
 using JobScraper.Repositories;
-using JobScraper.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Npgsql;
 
-var config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", optional: false)
-    .AddEnvironmentVariables()
-    .Build();
-
-using var logFactory = LoggerFactory.Create(b => b.AddConsole());
-
-var connectionString = config.GetConnectionString("Postgres")
-    ?? throw new InvalidOperationException("Missing Postgres connection string");
-
-var http = new HttpClient();
-http.DefaultRequestHeaders.UserAgent.ParseAdd("JobScraper/1.0");
-
-var scraper    = new ScraperService(http, logFactory.CreateLogger<ScraperService>());
-var repository = new JobRepository(connectionString, logFactory.CreateLogger<JobRepository>());
-var logger     = logFactory.CreateLogger("Program");
-
-try
+var host = Host.CreateDefaultBuilder(args).ConfigureServices((context, services) =>
 {
-    await repository.EnsureSchemaAsync();
-    var postings = await scraper.ScrapeAsync();
-    logger.LogInformation("Parsed {Count} postings", postings.Count);
-    var saved = await repository.UpsertAsync(postings);
-    logger.LogInformation("Upserted {Count} rows into job_postings", saved);
-}
-catch (Exception ex)
+    // create data source for connecting with postgres server
+    var dataSource = new NpgsqlDataSourceBuilder(context.Configuration.GetConnectionString("Postgres")
+        ?? "Host=localhost;Port=5433;Database=JobPostings;Username=postgres;Password=Th3Pr0gr@mm3r!")
+        .Build();
+    
+    services.AddSingleton(dataSource);
+
+    // apply data source to dbcontext options
+    services.AddDbContext<AppDbContext>(options => 
+        options.UseNpgsql(dataSource));
+    
+    // this section will need duplicating for every scraper I make. 
+    // add the http client to each scraper service (Indeed, ...)
+    services.AddHttpClient<IndeedScraperService>(client =>
+    {
+        client.DefaultRequestHeaders.Add("User-Agent","Mozilla/5.0 (compatible; JobScrapper/1.0)");
+        client.Timeout = TimeSpan.FromSeconds(30);
+    });
+
+    services.AddScoped<JobRepository>();
+})
+// add logging in the console 
+.ConfigureLogging(logging =>
 {
-    logger.LogCritical(ex, "Scraper failed");
-    return 1;
+    logging.ClearProviders();
+    logging.AddConsole();
+})
+.Build();
+
+using (var scope = host.Services.CreateScope())
+{
+    var scraper   = scope.ServiceProvider.GetRequiredService<ScraperService>();
+    var repo      = scope.ServiceProvider.GetRequiredService<JobRepository>();
+    var logger    = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    const string indeedUrl = "temp";
+
+    logger.LogInformation("Fetching {Url}", indeedUrl);
+    var jobs = await scraper.FetchAsync(indeedUrl);
+    logger.LogInformation("Found {Count} job postings", jobs.Count);
+
+    logger.LogInformation("Inserting into database...");
+    var inserted = await repo.GetJobPostingsAsync(jobs);
+    logger.LogInformation("Done");
 }
 
 return 0;
