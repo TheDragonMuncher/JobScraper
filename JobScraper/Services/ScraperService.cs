@@ -21,7 +21,7 @@ class ScraperService
         _targetUrl = url;
     }
 
-    public async Task<List<JobPosting>> ScrapSite(CancellationToken ct = default)
+    public async Task<List<JobPosting>> ScrapeSite(CancellationToken ct = default)
     {
         var html = await _http.GetStringAsync(_targetUrl, ct);
         var doc = new HtmlDocument();

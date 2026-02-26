@@ -1,11 +1,11 @@
 using JobScraper.Data;
+using JobScraper.Services;
 using JobScraper.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Npgsql;
 
 var host = Host.CreateDefaultBuilder(args).ConfigureServices((context, services) =>
@@ -23,7 +23,7 @@ var host = Host.CreateDefaultBuilder(args).ConfigureServices((context, services)
     
     // this section will need duplicating for every scraper I make. 
     // add the http client to each scraper service (Indeed, ...)
-    services.AddHttpClient<IndeedScraperService>(client =>
+    services.AddHttpClient<ScraperService>(client =>
     {
         client.DefaultRequestHeaders.Add("User-Agent","Mozilla/5.0 (compatible; JobScrapper/1.0)");
         client.Timeout = TimeSpan.FromSeconds(30);
@@ -49,11 +49,11 @@ using (var scope = host.Services.CreateScope())
     const string indeedUrl = "https://ca.indeed.com/jobs?q=junior+software+developer&l=Ontario&sc=0kf%3Aattr%28CF3CP%7CVDTG7%252COR%29%3B&from=searchOnDesktopSerp&vjk=f56171ec461148e8";
 
     logger.LogInformation("Fetching {Url}", indeedUrl);
-    var jobs = await scraper.FetchAsync(indeedUrl);
+    var jobs = await scraper.ScrapeSite();
     logger.LogInformation("Found {Count} job postings", jobs.Count);
 
     logger.LogInformation("Inserting into database...");
-    var inserted = await repo.GetJobPostingsAsync(jobs);
+    var inserted = await repo.AddJobPostingAsync(jobs);
     logger.LogInformation("Done");
 }
 
