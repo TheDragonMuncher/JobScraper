@@ -45,7 +45,8 @@ using (var scope = host.Services.CreateScope())
     var repo      = scope.ServiceProvider.GetRequiredService<JobRepository>();
     var logger    = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
-    const string indeedUrl = "temp";
+    // the url contains filters for ontario, remote, junior software developer, full time and/or coop/intern
+    const string indeedUrl = "https://ca.indeed.com/jobs?q=junior+software+developer&l=Ontario&sc=0kf%3Aattr%28CF3CP%7CVDTG7%252COR%29%3B&from=searchOnDesktopSerp&vjk=f56171ec461148e8";
 
     logger.LogInformation("Fetching {Url}", indeedUrl);
     var jobs = await scraper.FetchAsync(indeedUrl);

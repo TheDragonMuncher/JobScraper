@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "nVh1rEoC4kQ=",
+  "dgSpecHash": "7Y2Ece/E9po=",
   "success": true,
   "projectFilePath": "C:\\Projects\\JobSearch\\JobScraper\\JobScraper.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\ilove\\.nuget\\packages\\htmlagilitypack\\1.12.4\\htmlagilitypack.1.12.4.nupkg.sha512",
     "C:\\Users\\ilove\\.nuget\\packages\\microsoft.entityframeworkcore\\10.0.3\\microsoft.entityframeworkcore.10.0.3.nupkg.sha512",
     "C:\\Users\\ilove\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\10.0.3\\microsoft.entityframeworkcore.abstractions.10.0.3.nupkg.sha512",
     "C:\\Users\\ilove\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\10.0.3\\microsoft.entityframeworkcore.analyzers.10.0.3.nupkg.sha512",
