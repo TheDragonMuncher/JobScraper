@@ -59,6 +59,10 @@
               "target": "Package",
               "version": "[10.0.3, )"
             },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "target": "Package",
+              "version": "[10.0.3, )"
+            },
             "Microsoft.Extensions.Configuration": {
               "target": "Package",
               "version": "[10.0.3, )"

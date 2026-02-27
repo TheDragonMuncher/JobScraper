@@ -8,7 +8,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
-var host = Host.CreateDefaultBuilder(args).ConfigureServices((context, services) =>
+var host = Host.CreateDefaultBuilder(args)
+.ConfigureServices((context, services) =>
 {
     // create data source for connecting with postgres server
     var dataSource = new NpgsqlDataSourceBuilder(context.Configuration.GetConnectionString("Postgres")
@@ -56,5 +57,3 @@ using (var scope = host.Services.CreateScope())
     var inserted = await repo.AddJobPostingAsync(jobs);
     logger.LogInformation("Done");
 }
-
-return 0;

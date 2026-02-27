@@ -1,6 +1,7 @@
 using System.Reflection.Metadata;
 using HtmlAgilityPack;
 using JobScraper.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace JobScraper.Services;
@@ -21,11 +22,12 @@ class ScraperService
     const string SalaryXPath = ".//div[@id='salaryInfoAndJobType']/span";
     const string DescriptionXPath = ".//div[@id='jobDescriptionText']";
 
-    public ScraperService(HttpClient http, ILogger<ScraperService> logger, string url)
+    public ScraperService(HttpClient http, ILogger<ScraperService> logger, IConfiguration config)
     {
         _http = http;
         _logger = logger;
-        _targetUrl = url;
+        _targetUrl = config["Scraper:IndeedUrl"] ?? 
+        "https://ca.indeed.com/jobs?q=junior+software+developer&l=Ontario&sc=0kf%3Aattr%28CF3CP%7CVDTG7%252COR%29%3B&from=searchOnDesktopSerp&vjk=f56171ec461148e8";
     }
 
     public async Task<List<JobPosting>> ScrapeSite(CancellationToken ct = default)
