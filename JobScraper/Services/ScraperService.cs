@@ -27,12 +27,13 @@ class ScraperService
         _http = http;
         _logger = logger;
         _targetUrl = config["Scraper:IndeedUrl"] ?? 
-        "https://ca.indeed.com/jobs?q=junior+software+developer&l=Ontario&sc=0kf%3Aattr%28CF3CP%7CVDTG7%252COR%29%3B&from=searchOnDesktopSerp&vjk=f56171ec461148e8";
+        "https://ca.indeed.com/jobs?q=junior+software+developer&l=Ontario";
     }
 
-    public async Task<List<JobPosting>> ScrapeSite(CancellationToken ct = default)
+    public async Task<List<JobPosting>> ScrapeSite()
     {
-        var html = await _http.GetStringAsync(_targetUrl, ct);
+        _logger.LogInformation("Fetching {Url}", _targetUrl);
+        var html = await _http.GetStringAsync(_targetUrl);
         var doc = new HtmlDocument();
         doc.LoadHtml(html);
 

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("JobScraper")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+67a54c6644d0486741235cfd18697a728d066ad3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+539e6e1973c8c6dce555c85917065967423d9e03")]
 [assembly: System.Reflection.AssemblyProductAttribute("JobScraper")]
 [assembly: System.Reflection.AssemblyTitleAttribute("JobScraper")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
