@@ -13,10 +13,13 @@ class ScraperService
 
     // specific paths for indeed scraping
     const string JobCardXPath = "//div[contains(@class, 'cardOutline')]";
-    const string TitleXPath = ".//h2[contains(@class, 'jobTitle')]";
-    const string Company = ".//span[contains(@data-testid, 'company-name')]";
-    const string Location = ".//div[contains(@data-testid, 'text-location')]";
-    const string Salary = ".//li[containt(@class, 'salary-snippet-container')]/div/div";
+    const string PostingLinkXPath = ".//h2[contains(@class, 'jobTitle')]/a";
+    // const string SourceIdXPath = ".//";
+    const string TitleXPath = ".//h1[contains(@class, 'jobsearch-JobInfoHeader-title')]/span";
+    const string CompanyXPath = ".//div[@data-company-name='true']/span/a";
+    const string LocationXPath = ".//div[@data-testid='inlineHeader-companyLocation']/div";
+    const string SalaryXPath = ".//div[@id='salaryInfoAndJobType']/span";
+    const string DescriptionXPath = ".//div[@id='jobDescriptionText']";
 
     public ScraperService(HttpClient http, ILogger<ScraperService> logger, string url)
     {
@@ -43,8 +46,33 @@ class ScraperService
 
         foreach (var card in cards)
         {
-            try {
-                // use xPath to pull info from cards into new job postings
+            try 
+            {
+                var postingLink = await _http.GetStringAsync(
+                    card.SelectSingleNode(PostingLinkXPath)?.GetAttributeValue("href","")
+                );
+
+                var postingHtml = await _http.GetStringAsync(postingLink);
+                var postingDoc = new HtmlDocument();
+                postingDoc.LoadHtml(postingHtml);
+                
+                try
+                {
+                    postings.Add(new JobPosting
+                    {
+                        SourceId = Guid.NewGuid().ToString(),
+                        Title = postingDoc.DocumentNode.SelectSingleNode(TitleXPath)?.InnerHtml.Trim() ?? "Unknown",
+                        Company = postingDoc.DocumentNode.SelectSingleNode(CompanyXPath)?.InnerHtml.Trim(),
+                        Location = postingDoc.DocumentNode.SelectSingleNode(LocationXPath)?.InnerHtml.Trim(),
+                        Salary = postingDoc.DocumentNode.SelectSingleNode(SalaryXPath)?.InnerHtml.Trim(),
+                        Description = postingDoc.DocumentNode.SelectSingleNode(DescriptionXPath)?.ToString(),
+                        Url = postingLink,
+                        ScrapedAt = DateTime.UtcNow
+                    });
+                } catch
+                {
+                    _logger.LogWarning("Failed to parse job full posting. Check X Paths");
+                }
             } catch
             {
                 _logger.LogWarning("Failed to parse job card. Skipping");
