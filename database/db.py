@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 # Migrations — append new strings to add schema versions; never edit old ones.
 # ---------------------------------------------------------------------------
 
-MIGRATIONS: list[str] = [
+MIGRATIONS: list[str] = [ ### change table structure ###
     # v1 — example users table
     """
     CREATE TABLE IF NOT EXISTS users (
@@ -93,7 +93,7 @@ class _Pool:
                 detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES,
             )
             conn.row_factory = sqlite3.Row
-            conn.execute("PRAGMA journal_mode=WAL;")
+            conn.execute("PRAGMA journal_mode=WAL;") ### investigate code, ensure proper functionality ###
             conn.execute("PRAGMA foreign_keys=ON;")
             conn.execute("PRAGMA busy_timeout=5000;")
             self._local.conn = conn
@@ -103,7 +103,7 @@ class _Pool:
     def close(self) -> None:
         conn = getattr(self._local, "conn", None)
         if conn:
-            conn.close()
+            conn.close() ### investigate code, ensure proper functionality ###
             self._local.conn = None
             logger.debug("Closed connection on thread %s", threading.get_ident())
 
@@ -123,7 +123,7 @@ class Database:
         with cls._lock:
             if cls._instance is None:
                 inst = super().__new__(cls)
-                inst._pool = _Pool(path)
+                inst._pool = _Pool(path) ### investigate code, ensure proper functionality ###
                 inst._migrated = False
                 cls._instance = inst
         return cls._instance
@@ -136,19 +136,19 @@ class Database:
     def conn(self) -> sqlite3.Connection:
         if not self._migrated:
             with Database._lock:
-                if not self._migrated:
+                if not self._migrated: ### investigate code, ensure proper functionality ###
                     self._run_migrations()
                     self._migrated = True
         return self._pool.connection
 
     def close(self) -> None:
         """Close the current thread's connection."""
-        self._pool.close()
+        self._pool.close() ### investigate code, ensure proper functionality ###
 
     def reset(self) -> None:
         """Tear down the singleton — useful in tests."""
         self._pool.close()
-        Database._instance = None
+        Database._instance = None ### investigate code, ensure proper functionality ###
 
     # ------------------------------------------------------------------
     # Context manager
@@ -471,59 +471,3 @@ def get_db(path: str | Path = "app.db") -> Database:
     db = Database(Path(path))
     _ = db.conn  # triggers migration on first call
     return db
-
-
-# ---------------------------------------------------------------------------
-# Quick smoke-test
-# ---------------------------------------------------------------------------
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG, format="%(levelname)s  %(message)s")
-
-    db = get_db(":memory:")          # use in-memory DB for the demo
-
-    # -- INSERT --------------------------------------------------------------
-    uid = QueryBuilder("users").insert(db, name="Alice", email="alice@example.com")
-    print(f"Inserted user id={uid}")
-
-    QueryBuilder("users").insert_many(db, [
-        {"name": "Bob",   "email": "bob@example.com"},
-        {"name": "Carol", "email": "carol@example.com"},
-    ])
-
-    # -- SELECT --------------------------------------------------------------
-    all_users = QueryBuilder("users").select("id", "name", "email").fetchall(db)
-    print("\nAll users:")
-    for u in all_users:
-        print(f"  {dict(u)}")
-
-    # -- WHERE + LIMIT -------------------------------------------------------
-    one = (
-        QueryBuilder("users")
-        .select("name", "email")
-        .where("name LIKE ?", "B%")
-        .fetchone(db)
-    )
-    print(f"\nFirst 'B%' user: {dict(one)}")
-
-    # -- COUNT ---------------------------------------------------------------
-    n = QueryBuilder("users").where("active = ?", 1).count(db)
-    print(f"\nActive user count: {n}")
-
-    # -- UPDATE --------------------------------------------------------------
-    updated = QueryBuilder("users").where("id = ?", uid).update(db, name="Alicia")
-    print(f"\nUpdated {updated} row(s)")
-
-    # -- DELETE --------------------------------------------------------------
-    deleted = QueryBuilder("users").where("name = ?", "Carol").delete(db)
-    print(f"Deleted {deleted} row(s)")
-
-    # -- raw escape hatch ----------------------------------------------------
-    with db.transaction() as cur:
-        cur.execute("UPDATE users SET active = 0 WHERE name = 'Bob';")
-    print("\nFinal users:")
-    for u in QueryBuilder("users").fetchall(db):
-        print(f"  {dict(u)}")
-
-    db.reset()
-    print("\nDone ✓")
