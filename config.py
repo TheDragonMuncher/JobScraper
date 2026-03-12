@@ -2,8 +2,8 @@
 SEARCH_CONFIG = {
     "keywords": [
         "data analyst",
-        "senior data analyst",
-        "business intelligence analyst"
+        "software developer",
+        "junior software developer"
     ],
     "locations": ["Toronto", "Remote", "Ontario"],
     "max_jobs_per_source": 50,
@@ -20,12 +20,12 @@ SCHEDULE = {
     "run_time": "08:00",       # run every day at 8am
     "timezone": "America/Toronto"
 }
-# ```
+'''
 
-# ---
+---
 
 ## Requirements
-# ```
+'''
 # httpx
 # beautifulsoup4
 # sqlalchemy
