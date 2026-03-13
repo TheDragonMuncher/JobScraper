@@ -57,20 +57,23 @@ MIGRATIONS: list[str] = [ ### change table structure ###
     """
     CREATE TABLE IF NOT EXISTS users (
         id         INTEGER PRIMARY KEY AUTOINCREMENT,
-        name       TEXT    NOT NULL,
-        email      TEXT    NOT NULL UNIQUE,
-        active     INTEGER NOT NULL DEFAULT 1,
-        created_at TEXT    NOT NULL DEFAULT (datetime('now'))
+        source     varchar(256),
+        title      varchar(64),
+        company    varchar(64),
+        location   varchar(64),
+        job_type   varchar(64),
+        seniority  varchar(64),
+        salary_min integer,
+        salary_max integer,
+        description mediumtext,
+        skills     mediumtext,
+        url        varchar(256),
+        posted_at  datetime,
+        scraped_at datetime,
+        raw_html   mediumtext
     );
     CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
-    """,
-    # v2 — add a tags table (example of a follow-on migration)
     """
-    CREATE TABLE IF NOT EXISTS tags (
-        id   INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT    NOT NULL UNIQUE
-    );
-    """,
 ]
 
 
