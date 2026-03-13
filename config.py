@@ -6,8 +6,9 @@ SEARCH_CONFIG = {
         "junior software developer"
     ],
     "locations": ["Toronto", "Remote", "Ontario"],
-    "max_jobs_per_source": 50,
+    "max_jobs": 50,
     "days_back": 1,           # only fetch last 24hrs on daily run
+    "job_type": "fulltime",
 }
 
 FILTERS = {
@@ -20,6 +21,8 @@ SCHEDULE = {
     "run_time": "08:00",       # run every day at 8am
     "timezone": "America/Toronto"
 }
+
+DB_PATH = "sqlite:///app.db"
 '''
 
 ---
