@@ -118,6 +118,7 @@ class Database:
 
     _instance: Optional["Database"] = None
     _lock = threading.Lock()
+    _pool = _Pool(Path("app.db"))
 
     def __new__(cls, path: Path = Path("app.db")) -> "Database":
         with cls._lock:
@@ -366,7 +367,7 @@ class QueryBuilder:
         """Return ``True`` if at least one row matches."""
         return self.count(db) > 0
 
-    def insert(self, db: Database, **values: Any) -> int:
+    def insert(self, db: Database, **values: Any) -> int | None:
         """
         INSERT a single row.  Keyword arguments map to column names.
         Returns the new row's ``lastrowid``.
