@@ -26,12 +26,15 @@ def analyze_job_batch(job_descriptions: list[dict]) -> dict:
     """
 
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-sonnet-4-5",
         max_tokens=2000,
         messages=[{"role": "user", "content": prompt}]
     )
 
-    return json.loads(response.content[0].text)
+    if response.content and response.content[0].type == "text":
+        return json.loads(response.content[0].text)
+    else:
+        raise ValueError(f"Unexpected response: {response}")
 
 
 def generate_resume_tips(job_descriptions: list, your_resume: str) -> str:
@@ -57,4 +60,7 @@ def generate_resume_tips(job_descriptions: list, your_resume: str) -> str:
         messages=[{"role": "user", "content": prompt}]
     )
 
-    return response.content[0].text
+    if response.content and response.content[0].type == "text":
+        return json.loads(response.content[0].text)
+    else:
+        raise ValueError(f"Unexpected response: {response}")
