@@ -1,9 +1,5 @@
-import csv
 from jobspy import scrape_jobs
-import database
-from config import DB_PATH, SEARCH_CONFIG
-import datetime
-
+from config import SEARCH_CONFIG
 
 def run_scrape():
     cfg = SEARCH_CONFIG
