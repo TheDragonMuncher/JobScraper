@@ -44,7 +44,7 @@ import sqlite3
 import threading
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Generator, Iterator, Optional
+from typing import Any, Generator, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ logger = logging.getLogger(__name__)
 MIGRATIONS: list[str] = [ ### change table structure ###
     # v1 — example users table
     """
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS job_postings (
         id         INTEGER PRIMARY KEY AUTOINCREMENT,
         source     varchar(256),
         title      varchar(64),

@@ -9,6 +9,6 @@ def main():
     if database._migrated == False:
         database._run_migrations()
     
-
+    inserted_count = db.QueryBuilder("job_postings").insert_many(database, job_postings)
 
     database.close()
